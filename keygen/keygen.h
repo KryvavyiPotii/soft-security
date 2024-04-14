@@ -9,7 +9,7 @@
 #define ELEMENT_HEIGHT  ELEMENT_OFFSET * 2
 #define BUTTON_WIDTH    ELEMENT_OFFSET * 8
 #define KEYGEN_WIDTH    LINE_WIDTH + ELEMENT_OFFSET * 2
-#define KEYGEN_HEIGHT	ELEMENT_OFFSET * 15
+#define KEYGEN_HEIGHT	ELEMENT_OFFSET * 16
 
 // Control identifiers.
 #define CID_USERNAME    10 
@@ -24,11 +24,18 @@ int addControls(HWND hwnd);
 int addMenu(HWND hwnd);
 
 // Password generation functions.
-void CreateNum(BYTE* pbUsername, UINT* pNum, int iUsernameSize);
-void CreatePassword(UINT uNum, BYTE* pbPassword);
+int keygen(HWND hwnd);
+void deriveNumber(BYTE* pbUsername, UINT* puNumber, int iUsernameSize);
+void createPassword(UINT uNumber, BYTE* pbPassword);
 
 // Debug functions.
 // Show error message box.
 // Arguments:
 //     [in] wstrError - wstring with error message.
 void showError(const std::wstring& wstrError);
+// Show value of some numeric variable.
+// Arguments:
+//     [in] wstrName - variable name.
+//         However, it can be any message that developer finds comfortable enough.
+//     [in] aValue - numeric value that needs to be shown.
+void showValue(const std::wstring& wstrName, auto aValue);
