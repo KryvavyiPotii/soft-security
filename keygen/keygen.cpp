@@ -257,8 +257,7 @@ int keygen(HWND hwnd)
         }
 
         // Resize buffer.
-        pbUsername = new BYTE[dwLength + 2];
-        pbUsername[dwLength + 1] = 0;
+        pbUsername = new BYTE[dwLength + 1];
 
         int iSize = GetWindowTextA(hwndUsername, (char*)pbUsername, dwLength + 1);
 
@@ -269,28 +268,21 @@ int keygen(HWND hwnd)
         }
     }
 
-    // DEBUG
-    // MessageBoxA(NULL, (char*)pbUsername, "Username", 0);
-
+    // Create number based on the entered username.
     UINT uNumber;
 
-    deriveNumber(pbUsername, &uNumber, dwLength + 1);
+    deriveNumber(pbUsername, &uNumber, dwLength);
 
     // Cleanup.
     delete[] pbUsername;
 
-    // DEBUG
-    //showValue(L"uNumber", uNumber);
-
+    // Create password based on the number.
     BYTE* pbPassword = new BYTE[9];
 
     createPassword(uNumber, pbPassword);
 
-    // Add null byte.
+    // Add null terminator.
     pbPassword[8] = 0;
-
-    // DEBUG
-    // MessageBoxA(NULL, (char*)pbPassword, "Password", 0);
 
     // Show output.
     {
@@ -316,29 +308,30 @@ int keygen(HWND hwnd)
     return 0;
 }
 
+#pragma optimize( "", off )
 void deriveNumber(BYTE* pbUsername, UINT* puNumber, int iUsernameSize)
-
 {
     int iCounter = 0;
 
     *puNumber = 0xfacc0fff;
 
-    if (0 < iUsernameSize)
+    if (iUsernameSize > 0)
     {
-        do
+        while (iCounter < iUsernameSize)
         {
             *puNumber = (pbUsername[iCounter] ^ *puNumber) << 8 | *puNumber >> 0x18;
             iCounter++;
-        } while (iCounter < iUsernameSize);
+        }
     }
 }
+#pragma optimize( "", on )
 
 void createPassword(UINT uNumber, BYTE* pbPassword)
 {
     int iCounter = 0;
     BYTE bCharacter = 0;
 
-    do
+    while (iCounter < 8)
     {
         // Get a nibble.
         UINT uNibble = uNumber & 0xf;
@@ -356,7 +349,7 @@ void createPassword(UINT uNumber, BYTE* pbPassword)
         pbPassword[iCounter] = uNibble + 0x30;
 
         iCounter++;
-    } while (iCounter < 8);
+    }
 }
 
 void showError(const std::wstring& wstrError)
